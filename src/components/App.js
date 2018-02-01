@@ -1,5 +1,5 @@
 import React from 'react';
-
+import {getAll, getByType, getBetweenAge} from '../data/pets.js'
 import Filters from './Filters';
 import PetBrowser from './PetBrowser';
 
@@ -8,12 +8,42 @@ class App extends React.Component {
     super();
 
     this.state = {
-      pets: [],
+      pets: getAll(),
       adoptedPets: [],
       filters: {
         type: 'all',
       }
     };
+  }
+
+
+  handleAdoption = (petId) => {
+    this.setState({
+      adoptedPets: [...this.state.adoptedPets, petId]
+    })
+  }
+
+  handleSelectType = (value) => {
+    this.setState({
+      filters: {
+        type: value
+      }
+    })
+  }
+
+  handleSubmit = () => {
+
+    if (this.state.filters.type === "all") {
+      this.setState({
+        pets: getAll()
+      })
+    }
+    else {
+      this.setState({
+        pets: getByType(this.state.filters.type)
+      })
+    }
+
   }
 
   render() {
@@ -25,10 +55,17 @@ class App extends React.Component {
         <div className="ui container">
           <div className="ui grid">
             <div className="four wide column">
-              <Filters />
+
+              <Filters
+                filters={this.state.filters}
+                onChangeType={this.handleSelectType}
+                onFindPetsClick={this.handleSubmit}
+
+              />
+
             </div>
             <div className="twelve wide column">
-              <PetBrowser />
+              <PetBrowser pets={this.state.pets} onAdoptPet={this.handleAdoption} adoptedPets={this.state.adoptedPets}/>
             </div>
           </div>
         </div>
